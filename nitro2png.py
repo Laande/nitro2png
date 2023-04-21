@@ -1,7 +1,7 @@
 import sys
 import os
 import zlib
-from read_bytes import ReadBytes
+from .read_bytes import ReadBytes
 
 
 def nitro2png(file):
