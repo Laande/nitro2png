@@ -20,10 +20,10 @@ class ReadBytes:
     def read_string(self) -> str:
         encoding = 'iso-8859-1'
         
-        len = int.from_bytes(self.bytearray[self.read_index:self.read_index + 2], byteorder='big', signed=False)
-        r_string = self.bytearray[self.read_index + 2:self.read_index + 2 + len].decode(encoding)
+        len = self.read_short()
+        r_string = self.bytearray[self.read_index:self.read_index + len].decode(encoding)
         
-        self.read_index += 2 + int.from_bytes(self.bytearray[self.read_index:self.read_index + 2], byteorder='big', signed=False)
+        self.read_index += len
         return r_string
 
     def read_bytes(self, len) -> bytearray:
