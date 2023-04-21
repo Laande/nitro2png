@@ -1,24 +1,27 @@
-import binascii
-import re
 import sys
-
-regex = b"89504e470d0a1a0a0000000d49484452(.*)0000000049454e44ae426082"
+import zlib
+from g_python.hpacket import HPacket
 
 
 def convert(file):
-    with open(file, "rb") as f:
-        hexdata = binascii.hexlify(f.read())
+    with open(file, 'rb') as f:
+        data = f.read()
 
-    result = re.finditer(regex, hexdata)
-    for i in result:
-        r = i.group().decode()
+    packet = HPacket(0)
+    packet.append_bytes(data)
+    file_count = packet.read_short()
 
-    return r
-
+    for _ in range(file_count):
+        name = packet.read_string()
+        length = packet.read_int()
+        compressed = packet.read_bytes(length)
+        decompressed = zlib.decompress(compressed)
+        
+        yield name, decompressed
 
 def save(file, r):
     with open(file, "wb") as f:
-        f.write(bytes.fromhex(r))
+        f.write(r)
     
     
 def main():
@@ -27,10 +30,9 @@ def main():
         exit(1)
         
     file = sys.argv[1]
-    output = sys.argv[2] if len(sys.argv) > 2 else file + ".png"
     
-    result = convert(file)
-    save(output, result)
+    for name, data in convert(file):
+        save(name, data)
 
     
 if __name__ == "__main__":
