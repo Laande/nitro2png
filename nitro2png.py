@@ -15,7 +15,12 @@ def nitro2png(file):
         name = read_bytes.read_string()
         length = read_bytes.read_int()
         compressed = read_bytes.read_bytes(length)
-        decompressed = zlib.decompress(compressed)
+        if compressed.startswith(b'x\x9c'):
+            decompressed = zlib.decompress(compressed)
+        elif compressed.startswith(b'\x1f\x8b\x08'):
+            decompressed = zlib.decompress(compressed, 16+zlib.MAX_WBITS)
+        else:
+            continue
 
         yield name, decompressed
 
