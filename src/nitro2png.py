@@ -1,5 +1,3 @@
-import sys
-import os
 import zlib
 from .read_bytes import ReadBytes
 
@@ -28,19 +26,3 @@ def nitro2png(file):
 def save(file, r):
     with open(file, "wb") as f:
         f.write(r)
-
-
-def main():
-    if not sys.argv[1:]:
-        file_name = os.path.basename(__file__)
-        print(f"Usage: python {file_name} <file> [output]")
-        exit(1)
-
-    file = sys.argv[1]
-
-    for name, data in nitro2png(file):
-        save(name, data)
-
-
-if __name__ == "__main__":
-    main()
