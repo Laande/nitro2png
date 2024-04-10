@@ -2,7 +2,7 @@ import zlib
 from .read_bytes import ReadBytes
 
 
-def nitro2png(file):
+def convert(file):
     with open(file, 'rb') as f:
         data = f.read()
 
