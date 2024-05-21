@@ -11,7 +11,7 @@ def main():
 
     file = sys.argv[1]
 
-    for name, data in n2png.nitro2png(file):
+    for name, data in n2png.convert(file):
         n2png.save(name, data)
         
         
