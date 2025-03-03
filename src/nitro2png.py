@@ -10,17 +10,23 @@ def convert(file):
     file_count = read_bytes.read_short()
 
     for _ in range(file_count):
+        decompressor = None
         name = read_bytes.read_string()
         length = read_bytes.read_int()
         compressed = read_bytes.read_bytes(length)
         if compressed.startswith(b'x\x9c'):
-            decompressed = zlib.decompress(compressed)
+            decompressor = zlib.decompressobj()
         elif compressed.startswith(b'\x1f\x8b\x08'):
-            decompressed = zlib.decompress(compressed, 16+zlib.MAX_WBITS)
-        else:
-            continue
+            decompressor = zlib.decompressobj(16 + zlib.MAX_WBITS)
 
-        yield name, decompressed
+        if decompressor:
+            try:
+                decompressed = decompressor.decompress(compressed) + decompressor.flush()
+                yield name, decompressed
+            except zlib.error as e:
+                print(f"Cant decompress the file {name}: {e}")
+        else:
+            print(f"Format unknown for {name}")
 
 
 def save(file, r):
